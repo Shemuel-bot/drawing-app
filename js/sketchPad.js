@@ -12,7 +12,7 @@ class SketchPad {
     this.ctx = this.canvas.getContext("2d");
 
     this.isDrawing = false;
-    this.path = [];
+    this.paths = [];
 
     this.#addEventListeners();
   }
@@ -21,14 +21,15 @@ class SketchPad {
     this.canvas.onmousedown = (event) => {
       const rect = this.canvas.getBoundingClientRect();
       const mouse = this.#getMouse(event)
-      this.path = [mouse];
+      this.paths.push([mouse]);
       this.isDrawing = true;
     };
 
     this.canvas.onmousemove = (event) => {
       if (this.isDrawing) {
         const mouse = this.#getMouse(event)
-        this.path.push(mouse);
+        const lastPath = this.paths[this.paths.length-1]
+        lastPath.push(mouse);
         this.#redraw()
       }
     };
@@ -41,7 +42,7 @@ class SketchPad {
   #redraw(){
         this.ctx.clearRect(0, 0,
             this.canvas.width, this.canvas.height)
-        draw.path(this.ctx, this.path)
+        draw.paths(this.ctx, this.paths)
   }
 
   #getMouse = (event) => {
