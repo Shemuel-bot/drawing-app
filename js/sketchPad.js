@@ -9,6 +9,13 @@ class SketchPad {
         `;
     contaner.appendChild(this.canvas);
 
+    const lineBreak = document.createElement("br")
+    contaner.appendChild(lineBreak)
+
+    this.undoBtn = document.createElement('button')
+    this.undoBtn.innerHTML = "UNDO"
+    contaner.appendChild(this.undoBtn)
+
     this.ctx = this.canvas.getContext("2d");
 
     this.isDrawing = false;
@@ -37,12 +44,33 @@ class SketchPad {
     this.canvas.onmouseup = () => {
       this.isDrawing = false;
     };
+    this.canvas.ontouchstart = (event) => {
+        const loc = event.touches[0]
+        this.canvas.onmousedown(loc)
+    }
+    this.canvas.ontouchmove = (event) => {
+        const loc = event.touches[0]
+        this.canvas.onmousemove(loc)
+    } 
+    this.canvas.ontouchend = (event) => {
+        const loc = event.touches[0]
+        this.canvas.onmouseup(loc)
+    } 
+    this.undoBtn.onclick = () => {
+        this.paths.pop()
+        this.#redraw()
+    }
   }
 
   #redraw(){
         this.ctx.clearRect(0, 0,
             this.canvas.width, this.canvas.height)
         draw.paths(this.ctx, this.paths)
+        if (this.paths.length>0) {
+            this.undoBtn.disabled = false;
+        }else{
+            this.undoBtn.disabled = true
+        }
   }
 
   #getMouse = (event) => {
